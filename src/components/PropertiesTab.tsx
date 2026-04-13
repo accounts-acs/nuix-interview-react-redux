@@ -1,6 +1,6 @@
 import { Box, Table, TableBody, TableCell, TableRow, Typography } from '@mui/material';
 import type { Item } from '../types/item';
-import { classifyValue, formatValue } from '../utils/formatValue';
+import { formatValue } from '../utils/formatValue';
 
 interface PropertiesTabProps {
   item: Item;
@@ -20,18 +20,19 @@ export function PropertiesTab({ item }: PropertiesTabProps) {
   return (
     <Table size="small" aria-label="properties">
       <TableBody>
-        {entries.map(([key, value]) => {
-          const kind = classifyValue(key, value);
-          const align = kind === 'number' || kind === 'date' ? 'right' : 'left';
-          return (
-            <TableRow key={key}>
-              <TableCell component="th" scope="row" sx={{ width: '40%' }}>
-                {key}
-              </TableCell>
-              <TableCell align={align}>{formatValue(key, value)}</TableCell>
-            </TableRow>
-          );
-        })}
+        {entries.map(([key, value]) => (
+          <TableRow key={key}>
+            <TableCell component="th" scope="row">
+              {key}
+            </TableCell>
+            <TableCell
+              align={typeof value === 'number' ? 'right' : 'left'}
+              sx={{ width: '1%', whiteSpace: 'nowrap' }}
+            >
+              {formatValue(key, value)}
+            </TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

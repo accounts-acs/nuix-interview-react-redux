@@ -12,7 +12,7 @@ export function ImageTab({ guid }: ImageTabProps) {
         component="img"
         src={buildImageUrl(guid)}
         alt={`Image for ${guid}`}
-        sx={{ maxWidth: '100%', maxHeight: 320, objectFit: 'contain' }}
+        sx={{ maxWidth: '100%', maxHeight: 320, objectFit: 'contain', borderRadius: '10px' }}
       />
     </Box>
   );

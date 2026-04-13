@@ -7,15 +7,18 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import type { Item } from '../types/item';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { selectItem } from '../features/items/itemsSlice';
+import {
+  selectAllItems,
+  selectSelectedGuid,
+} from '../features/items/selectors';
 
-interface ItemsTableProps {
-  items: Item[];
-  selectedGuid: string | null;
-  onSelect: (guid: string) => void;
-}
+export function ItemsTable() {
+  const dispatch = useAppDispatch();
+  const items = useAppSelector(selectAllItems);
+  const selectedGuid = useAppSelector(selectSelectedGuid);
 
-export function ItemsTable({ items, selectedGuid, onSelect }: ItemsTableProps) {
   return (
     <TableContainer component={Paper} variant="outlined">
       <Table size="small" aria-label="items">
@@ -32,7 +35,7 @@ export function ItemsTable({ items, selectedGuid, onSelect }: ItemsTableProps) {
               key={item.guid}
               hover
               selected={item.guid === selectedGuid}
-              onClick={() => onSelect(item.guid)}
+              onClick={() => dispatch(selectItem(item.guid))}
               sx={{ cursor: 'pointer' }}
             >
               <TableCell>{item.guid}</TableCell>

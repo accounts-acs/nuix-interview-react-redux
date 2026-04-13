@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   Alert,
   AppBar,
@@ -9,43 +9,22 @@ import {
   Toolbar,
   Typography,
 } from '@mui/material';
-import { fetchItems } from './api/itemsApi';
-import { ItemDetails, type DetailsTab } from './components/ItemDetails';
+import { useAppDispatch, useAppSelector } from './app/hooks';
+import { loadItems } from './features/items/itemsSlice';
+import { selectError, selectStatus } from './features/items/selectors';
+import { ItemDetails } from './components/ItemDetails';
 import { ItemsTable } from './components/ItemsTable';
-import type { Item } from './types/item';
-
-type Status = 'idle' | 'loading' | 'succeeded' | 'failed';
 
 export default function App() {
-  const [items, setItems] = useState<Item[]>([]);
-  const [status, setStatus] = useState<Status>('idle');
-  const [error, setError] = useState<string | null>(null);
-  const [selectedGuid, setSelectedGuid] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<DetailsTab>('properties');
+  const dispatch = useAppDispatch();
+  const status = useAppSelector(selectStatus);
+  const error = useAppSelector(selectError);
 
   useEffect(() => {
-    let cancelled = false;
-    setStatus('loading');
-    fetchItems()
-      .then((data) => {
-        if (cancelled) return;
-        setItems(data);
-        setStatus('succeeded');
-        if (data.length > 0) setSelectedGuid(data[0].guid);
-      })
-      .catch((err: Error) => {
-        if (cancelled) return;
-        setError(err.message);
-        setStatus('failed');
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const selectedItem = selectedGuid
-    ? items.find((item) => item.guid === selectedGuid) ?? null
-    : null;
+    if (status === 'idle') {
+      dispatch(loadItems());
+    }
+  }, [dispatch, status]);
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -68,18 +47,10 @@ export default function App() {
         {status === 'succeeded' && (
           <Grid container spacing={2}>
             <Grid item xs={12} md={7}>
-              <ItemsTable
-                items={items}
-                selectedGuid={selectedGuid}
-                onSelect={setSelectedGuid}
-              />
+              <ItemsTable />
             </Grid>
             <Grid item xs={12} md={5}>
-              <ItemDetails
-                item={selectedItem}
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-              />
+              <ItemDetails />
             </Grid>
           </Grid>
         )}

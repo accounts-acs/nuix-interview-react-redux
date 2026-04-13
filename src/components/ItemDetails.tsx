@@ -1,17 +1,16 @@
 import { Box, Paper, Tab, Tabs, Typography } from '@mui/material';
-import type { Item } from '../types/item';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { setActiveTab } from '../features/items/itemsSlice';
+import { selectActiveTab, selectSelectedItem } from '../features/items/selectors';
+import type { DetailsTab } from '../features/items/itemsSlice';
 import { ImageTab } from './ImageTab';
 import { PropertiesTab } from './PropertiesTab';
 
-export type DetailsTab = 'properties' | 'image';
+export function ItemDetails() {
+  const dispatch = useAppDispatch();
+  const item = useAppSelector(selectSelectedItem);
+  const activeTab = useAppSelector(selectActiveTab);
 
-interface ItemDetailsProps {
-  item: Item | null;
-  activeTab: DetailsTab;
-  onTabChange: (tab: DetailsTab) => void;
-}
-
-export function ItemDetails({ item, activeTab, onTabChange }: ItemDetailsProps) {
   if (!item) {
     return (
       <Paper variant="outlined" sx={{ p: 2 }}>
@@ -24,7 +23,7 @@ export function ItemDetails({ item, activeTab, onTabChange }: ItemDetailsProps) 
     <Paper variant="outlined">
       <Tabs
         value={activeTab}
-        onChange={(_, value: DetailsTab) => onTabChange(value)}
+        onChange={(_, value: DetailsTab) => dispatch(setActiveTab(value))}
         aria-label="item details tabs"
       >
         <Tab label="Properties" value="properties" />
